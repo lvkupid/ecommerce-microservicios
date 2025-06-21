@@ -1,6 +1,5 @@
-package com.lvecomerce.servicio_carrito.model;
+package com.lvecomerce.servicio_carrito.service.dto;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -12,11 +11,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Cart {
+public class cartdto {
     private Long id;
-    private List<CartItem> items = new ArrayList<>();
-
-    public Cart(Long id) {
-        this.id = id;
-    }
+    private List<cartitemdto> items;
+    private Double totalPrice;
 }

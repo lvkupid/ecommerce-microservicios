@@ -13,7 +13,7 @@ public class CartRepository {
     private Map<Long, Cart> carts = new HashMap<>();
 
     public CartRepository() {
-        carts.put(1L, new Cart(1L, null));
+        carts.put(1L, new Cart(1L));
     }
 
     public Optional<Cart> findById(Long id) {
