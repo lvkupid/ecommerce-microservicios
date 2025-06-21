@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-productos
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: db_productos
+      MYSQL_USER: root
+      MYSQL_PASSWORD: user_password
+    ports:
+      - "3306:3306"
