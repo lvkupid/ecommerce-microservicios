@@ -36,7 +36,7 @@ public class CartService {
         // 3. Recorremos los items del carrito interno
         for (CartItem item : cart.getItems()) {
             // 4. POR CADA ITEM, LLAMAMOS AL SERVICIO DE PRODUCTOS
-            String productApiUrl = "http://localhost:8080/api/products/" + item.getProductId();
+            String productApiUrl = "http://products-service:8080/api/products/" + item.getProductId();
             productdto product = restTemplate.getForObject(productApiUrl, productdto.class);
 
             // 5. Creamos el CartItemDTO con la info completa

@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # Servicio de la Base de Datos
+  mysql-db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: user_password
+      MYSQL_DATABASE: db_productos
+    ports:
+      - "3306:3306"
+    healthcheck: # <-- AÑADIDO
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Servicio de Productos
+  products-service:
+    build: ./servicio-productos  # Le dice que construya la imagen desde el Dockerfile en esta carpeta
+    ports:
+      - "8080:8080"
+    environment:
+      # AVISO: El hostname ya no es 'localhost', es el nombre del servicio de la BD: 'mysql-db'
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/db_productos
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=user_password
+    depends_on:
+      mysql-db: # <-- CAMBIADO
+        condition: service_healthy # <-- CAMBIADO
+
+  # Servicio de Carrito
+  cart-service:
+    build: ./servicio-carrito
+    ports:
+      - "8081:8081"
+    depends_on:
+      - products-service # Espera a que el servicio de productos esté listo
