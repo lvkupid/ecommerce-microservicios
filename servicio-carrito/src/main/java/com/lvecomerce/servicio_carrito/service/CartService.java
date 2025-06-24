@@ -2,6 +2,7 @@ package com.lvecomerce.servicio_carrito.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,15 +62,42 @@ public class CartService {
     }
 
     //add item to cart
-    public void addItemToCart(Long cartId, CartItem item) {
-        // Buscamos el carrito interno desde el repositorio, no con el otro método.
+    public void addItemToCart(Long cartId, CartItem newItem) {
+        // Buscamos el carrito interno
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new RuntimeException("Cart not found with id: " + cartId));
 
+        // Verificamos si la lista de items es nula (buena práctica)
         if (cart.getItems() == null) {
             cart.setItems(new ArrayList<>());
         }
-        cart.getItems().add(item);
+
+        // --- LÓGICA MEJORADA ---
+        // Buscamos si ya existe un item para este producto en el carrito
+        Optional<CartItem> existingItemOpt = cart.getItems().stream()
+                .filter(item -> item.getProductId().equals(newItem.getProductId()))
+                .findFirst();
+
+        if (existingItemOpt.isPresent()) {
+            // Si el item ya existe, incrementamos su cantidad
+            CartItem existingItem = existingItemOpt.get();
+            
+            int oldQuantity = existingItem.getQuantity();
+            int newQuantity = oldQuantity + newItem.getQuantity();
+            
+            existingItem.setQuantity(newQuantity);
+            
+            // ✅ Imprimimos en consola para debug
+            System.out.println("Producto ya en carrito. Cantidad actualizada de " + oldQuantity + " a " + newQuantity);
+        } else {
+            // Si el item no existe, lo agregamos a la lista
+            cart.getItems().add(newItem);
+
+            // ✅ También podrías imprimir esta parte si querés ver el caso contrario
+            System.out.println("Producto nuevo agregado al carrito con cantidad: " + newItem.getQuantity());
+        }
+
+        // Guardamos el carrito actualizado
         cartRepository.save(cart);
     }
 }
